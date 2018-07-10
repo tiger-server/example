@@ -1,6 +1,6 @@
 
 def withGitCred(command) {
-  withCredentials([sshUserPrivateKey(credentialsId: "${env.GIT_CRED_ID}", keyFileVariable: 'GIT_KEYFILE')]) {
+  withCredentials([sshUserPrivateKey(credentialsId: "${GIT_CRED_ID}", keyFileVariable: 'GIT_KEYFILE')]) {
     sh 'echo ssh -i $GIT_KEYFILE -l git -o StrictHostKeyChecking=no \\"\\$@\\" > run_ssh.sh'
     sh 'chmod +x run_ssh.sh'
     withEnv(['GIT_SSH=./run_ssh.sh']) {
