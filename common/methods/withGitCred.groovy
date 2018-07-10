@@ -7,3 +7,5 @@ def call(command, cred = "${GIT_CRED_ID}") {
     }
   }
 }
+
+return this;
