@@ -63,7 +63,7 @@ pipeline {
               }
             }
 
-            writeFile file: versionFile, text: remoteVersion
+            writeFile file: '.version', text: remoteVersion
 
             sh "git add ."
             sh "git commit -m 'update version ${remoteVersion}'"
