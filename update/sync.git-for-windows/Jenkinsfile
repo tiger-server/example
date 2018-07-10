@@ -1,6 +1,6 @@
 
 def withGitCred(command) {
-  withCredentials([sshUserPrivateKey(credentialsId: "${params.GIT_CRED_ID}", keyFileVariable: 'GIT_KEYFILE')]) {
+  withCredentials([sshUserPrivateKey(credentialsId: "${env.GIT_CRED_ID}", keyFileVariable: 'GIT_KEYFILE')]) {
     sh 'echo ssh -i $GIT_KEYFILE -l git -o StrictHostKeyChecking=no \\"\\$@\\" > run_ssh.sh'
     sh 'chmod +x run_ssh.sh'
     withEnv(['GIT_SSH=./run_ssh.sh']) {
@@ -11,12 +11,13 @@ def withGitCred(command) {
 }
 
 def shouldProceed = false
+def remoteVersion = ""
 
 pipeline {
   agent any
 
-  parameters {
-    string(name: "GIT_CRED_ID", description: "Git Repo Credentials ID")
+  trigger {
+    cron("H 0 * * 3,6")
   }
 
   stages {
@@ -40,7 +41,7 @@ pipeline {
           dir("g4w") {
             def version = readFile(file: '.version').trim()
             def json = readJSON text: new URL("https://api.github.com/repos/git-for-windows/git/releases").newReader().text;
-            def remoteVersion = json[0].id.toString();
+            remoteVersion = json[0].id.toString();
             shouldProceed = (remoteVersion != version)
           }
         }
