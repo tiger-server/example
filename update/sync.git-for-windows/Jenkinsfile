@@ -1,0 +1,74 @@
+
+def withGitCred(command) {
+  withCredentials([sshUserPrivateKey(credentialsId: "${params.GIT_CRED_ID}", keyFileVariable: 'GIT_KEYFILE')]) {
+    sh 'echo ssh -i $GIT_KEYFILE -l git -o StrictHostKeyChecking=no \\"\\$@\\" > run_ssh.sh'
+    sh 'chmod +x run_ssh.sh'
+    withEnv(['GIT_SSH=./run_ssh.sh']) {
+      sh command
+    }
+  }
+
+}
+
+def shouldProceed = false
+
+pipeline {
+  agent any
+
+  parameters {
+    string(name: "GIT_CRED_ID", description: "Git Repo Credentials ID")
+  }
+
+  stages {
+    stage("Checkout original repo") {
+      steps {
+        script {
+          if (!fileExists("g4w")) {
+            withGitCred("git clone --depth 1 git@gitee.com:git-installer/git-for-windows.git g4w")
+          }
+        }
+      }
+    }
+
+    stage("Compare version") {
+      steps {
+        script {
+          dir("g4w") {
+            def version = readFile(file: '.version').trim()
+            def json = readJSON text: new URL("https://api.github.com/repos/git-for-windows/git/releases").newReader().text;
+            def remoteVersion = json[0].id.toString();
+            shouldProceed = (remoteVersion != version)
+          }
+        }
+      }
+    }
+
+    stage("Update") {
+      when { expression {  shouldProceed } }
+
+      steps {
+        script {
+          dir("g4w") {
+            def assets = readJSON text: new URL("https://api.github.com/repos/git-for-windows/git/releases/${remoteVersion}/assets").newReader().text
+        
+            assets.each { asset ->
+              def url = asset.browser_download_url
+              if (url.endsWith(".exe") && !url.toLowerCase().contains("7z")) {
+                echo "wget ${asset.browser_download_url}"
+              }
+            }
+
+            writeFile file: versionFile, text: remoteVersion
+
+            sh "git add ."
+            sh "git commit -m 'update version ${remoteVersion}'"
+
+            withGitCred("git push origin master")
+
+
+          }
+        }
+      }
+    }
+  }
+}
