@@ -1,5 +1,5 @@
 
-def withGitCred = load("${rootDir}/common/methods/withGitCred.groovy")
+def withGitCred
 
 def shouldProceed = false
 def remoteVersion = ""
@@ -15,6 +15,8 @@ pipeline {
     stage("Checkout original repo") {
       steps {
         script {
+          withGitCred = load("${rootDir}/common/methods/withGitCred.groovy")
+
           if (!fileExists("g4w")) {
             withGitCred("git clone --depth 1 git@gitee.com:git-installer/git-for-windows.git g4w")
           } else {
