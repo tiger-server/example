@@ -16,7 +16,7 @@ def remoteVersion = ""
 pipeline {
   agent any
 
-  trigger {
+  triggers {
     cron("H 0 * * 3,6")
   }
 
