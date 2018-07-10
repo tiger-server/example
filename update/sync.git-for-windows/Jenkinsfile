@@ -1,5 +1,5 @@
 
-def withGitCred = load("../../common/methods/withGitCred.groovy")
+def withGitCred = load("${rootDir}/common/methods/withGitCred.groovy")
 
 def shouldProceed = false
 def remoteVersion = ""
