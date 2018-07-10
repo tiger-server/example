@@ -25,6 +25,10 @@ pipeline {
         script {
           if (!fileExists("g4w")) {
             withGitCred("git clone --depth 1 git@gitee.com:git-installer/git-for-windows.git g4w")
+          } else {
+            dir("g4w") {
+              withGitCred("git pull -r")
+            }
           }
         }
       }
