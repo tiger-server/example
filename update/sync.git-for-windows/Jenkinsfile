@@ -54,7 +54,7 @@ pipeline {
             assets.each { asset ->
               def url = asset.browser_download_url
               if (url.endsWith(".exe") && !url.toLowerCase().contains("7z")) {
-                echo "wget ${asset.browser_download_url}"
+                echo "wget -nc ${asset.browser_download_url}"
               }
             }
 
