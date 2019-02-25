@@ -2,7 +2,7 @@
   "name": "tiger",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "mate.js",
   "dependencies": {
     "tiger-server": "^0.2.1"
   },
