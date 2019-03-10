@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  mate:
+    build:
+      context: .
+    image: mate:up 
+    ports: 
+      - "9527:9527"
+    networks: 
+      - mate
+
+networks:
+  mate:
+    external: true

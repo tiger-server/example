@@ -1,5 +1,26 @@
-let { tiger } = require("tiger-server")
+const { mail } = require("tiger-server/protocols")
 
-let tg = tiger(`${__dirname}/modules`);
+const config = require("./config/config")
 
-tg();
+const tiger = require("tiger-server")(config)
+
+tiger.use(mail)
+
+tiger.define("hello", ["zmq:hello", function (tiger, state, message) {
+  tiger.log(`Message received: ${JSON.stringify(message)}`)
+}])
+
+tiger.define("cron", ["cron:*/5 * * * * *", function (tiger, { count = 0 }) {
+  count++;
+  tiger.notify("zmq:hello", { count })
+  return { count }
+}]);
+
+tiger.define("request", ["http:/hello", function (tiger, state, { req, res }) {
+
+  tiger.notify("mail:someone@another.com", { subject: "hello", text: "hello world", html: "<p>hello world</p>" });
+
+  res.send("success!")
+}])
+
+tiger.serve();
