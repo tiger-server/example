@@ -1,26 +1,20 @@
-const { mail } = require("tiger-server/protocols")
-
-const config = require("./config/config")
-
+const config = require("./config")
 const tiger = require("tiger-server")(config)
+const luxon = require("luxon")
+
+const { mail } = require("tiger-server/protocols")
 
 tiger.use(mail)
 
-tiger.define("hello", ["zmq:hello", function (tiger, state, message) {
-  tiger.log(`Message received: ${JSON.stringify(message)}`)
-}])
-
-tiger.define("cron", ["cron:*/5 * * * * *", function (tiger, { count = 0 }) {
-  count++;
-  tiger.notify("zmq:hello", { count })
-  return { count }
+tiger.define("minutes-timer", ["cron:0 0/30 * * * *", function (tiger) {
+  tiger.notify("zmq:timer", { time: luxon.DateTime.local().setZone('Asia/Shanghai').startOf('minute').toISO() })
 }]);
 
-tiger.define("request", ["http:/hello", function (tiger, state, { req, res }) {
 
-  tiger.notify("mail:someone@another.com", { subject: "hello", text: "hello world", html: "<p>hello world</p>" });
+tiger.define("timer-notification", ["zmq:timer", function(tiger, state, { time }) {
+  const text = `贴身小伙伴为您报时: ${time}`;
 
-  res.send("success!")
-}])
+  tiger.notify(config.mail.channel, { subject: text, text: text, html: `<p>${text}</p>`  })
+}]);
 
 tiger.serve();
