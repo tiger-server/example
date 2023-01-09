@@ -4,7 +4,7 @@
   "description": "",
   "main": "mate.js",
   "dependencies": {
-    "luxon": "^1.11.4",
+    "luxon": "^2.5.2",
     "tiger-server": "^0.5.3"
   },
   "devDependencies": {},

@@ -212,9 +212,9 @@ log4js@^3.0.5:
     rfdc "^1.1.2"
     streamroller "0.7.0"
 
-luxon@^1.11.4:
-  version "1.21.1"
-  resolved "https://registry.npm.taobao.org/luxon/download/luxon-1.21.1.tgz#00c9c9e624e66cfef745a8476c4ead14a3966a61"
+luxon@^2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-2.5.2.tgz#17ed497f0277e72d58a4756d6a9abee4681457b6"
 
 media-typer@0.3.0:
   version "0.3.0"
